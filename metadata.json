@@ -1,0 +1,6 @@
+{
+  "name": "BALLIT",
+  "description": "FIFA World Cup 2026 stadium operations living organism console and voice companion.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
