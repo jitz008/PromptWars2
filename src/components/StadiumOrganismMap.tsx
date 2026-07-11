@@ -49,7 +49,7 @@ export const StadiumOrganismMap: React.FC<StadiumOrganismMapProps> = ({
   isHealthy,
   isClogged,
 }) => {
-  const renderConcourseCircles = () => {
+  const concourseCircles = React.useMemo(() => {
     return Object.entries(CONCOURSE_RADII).map(([name, r]) => (
       <circle
         key={name}
@@ -62,9 +62,9 @@ export const StadiumOrganismMap: React.FC<StadiumOrganismMapProps> = ({
         strokeDasharray="4 6"
       />
     ));
-  };
+  }, []);
 
-  const renderSectorDividers = () => {
+  const sectorDividers = React.useMemo(() => {
     return Object.entries(SECTOR_ANGLES).map(([name, angle]) => {
       const rad = (angle * Math.PI) / 180;
       const x2 = 160 + 150 * Math.cos(rad);
@@ -81,7 +81,7 @@ export const StadiumOrganismMap: React.FC<StadiumOrganismMapProps> = ({
         />
       );
     });
-  };
+  }, []);
 
   const renderRouteLightpaths = () => {
     if (lensMode !== "fan" || !agentResult?.sectorsPassed) return null;
@@ -261,8 +261,8 @@ export const StadiumOrganismMap: React.FC<StadiumOrganismMapProps> = ({
       {/* Dynamic SVGs Stadium Map with 32 Neural Nodes */}
       <div className="relative w-full max-w-[340px] aspect-square flex items-center justify-center my-4 bg-slate-950/60 border border-slate-900 rounded-full p-4">
         <svg viewBox="0 0 320 320" className="w-full h-full text-slate-800 select-none">
-          {renderConcourseCircles()}
-          {renderSectorDividers()}
+          {concourseCircles}
+          {sectorDividers}
           {renderRouteLightpaths()}
           {telemetry?.nodes.map((node) => renderNodeElement(node))}
         </svg>

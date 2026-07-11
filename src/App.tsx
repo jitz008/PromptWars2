@@ -34,6 +34,7 @@ const determineEndpointAndPayload = (
 ) => {
   const isAccTopic =
     requiresAccRouting ||
+    selectedLanguage !== "English" ||
     /wheelchair|stroller|ramp|elevator|disabled|blind|deaf|obstruction|blocked/i.test(queryText);
 
   if (isAccTopic) {

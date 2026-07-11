@@ -97,7 +97,7 @@ function getIncidentSchema() {
  * @returns IncidentAgentResponse
  */
 export async function runIncidentAgent(telemetry: StadiumState): Promise<IncidentAgentResponse> {
-  const executeFn = async () => {
+  const executeFn = async (modelName: string) => {
     const ai = getGeminiClient();
 
     // Pick nodes with warning or critical status
@@ -109,7 +109,7 @@ export async function runIncidentAgent(telemetry: StadiumState): Promise<Inciden
     const prompt = createIncidentPrompt(anomalyNodes, telemetry);
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: modelName,
       contents: prompt,
       config: {
         responseMimeType: "application/json",

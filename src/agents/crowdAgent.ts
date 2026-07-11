@@ -85,7 +85,7 @@ function getCrowdSchema() {
  * @returns CrowdAgentResponse
  */
 export async function runCrowdAgent(telemetry: StadiumState): Promise<CrowdAgentResponse> {
-  const executeFn = async () => {
+  const executeFn = async (modelName: string) => {
     const ai = getGeminiClient();
 
     // Extract a compact telemetry string to stay efficient with tokens
@@ -97,7 +97,7 @@ export async function runCrowdAgent(telemetry: StadiumState): Promise<CrowdAgent
     const prompt = createCrowdPrompt(condensedNodes, telemetry);
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: modelName,
       contents: prompt,
       config: {
         responseMimeType: "application/json",

@@ -105,7 +105,7 @@ export async function runAccessibilityAgent(
 ): Promise<AccessibilityAgentResponse> {
   const sanitizedQuery = sanitizeUserInput(query);
 
-  const executeFn = async () => {
+  const executeFn = async (modelName: string) => {
     const ai = getGeminiClient();
 
     // Find any active obstructions
@@ -117,7 +117,7 @@ export async function runAccessibilityAgent(
     const prompt = createAccessibilityPrompt(sanitizedQuery, targetLanguage, blockedSectors);
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: modelName,
       contents: prompt,
       config: {
         responseMimeType: "application/json",

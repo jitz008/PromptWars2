@@ -106,7 +106,7 @@ export async function runNavigatorAgent(
 ): Promise<NavigatorAgentResponse> {
   const sanitizedQuery = sanitizeUserInput(query);
 
-  const executeFn = async () => {
+  const executeFn = async (modelName: string) => {
     const ai = getGeminiClient();
 
     // Extract distinct healthy gates/sectors
@@ -120,7 +120,7 @@ export async function runNavigatorAgent(
     const prompt = createNavigatorPrompt(sanitizedQuery, telemetry, requiresAccessibility, activeGates, greenTransit);
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: modelName,
       contents: prompt,
       config: {
         responseMimeType: "application/json",

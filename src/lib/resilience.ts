@@ -22,25 +22,62 @@ async function sleep(ms: number): Promise<void> {
 }
 
 /**
+ * Clean and extract readable messages from complex or JSON-formatted error strings
+ */
+export function cleanErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    try {
+      const parsed = JSON.parse(err.message);
+      if (parsed?.error?.message) {
+        return parsed.error.message;
+      }
+    } catch {
+      // Not a JSON string
+    }
+    return err.message;
+  }
+
+  if (typeof err === "object" && err !== null) {
+    try {
+      const str = JSON.stringify(err);
+      const parsed = JSON.parse(str);
+      if (parsed?.error?.message) {
+        return parsed.error.message;
+      }
+      if (parsed?.message) {
+        return parsed.message;
+      }
+    } catch {
+      // ignore
+    }
+  }
+
+  return String(err);
+}
+
+/**
  * Executes an agent generation task with automatic exponential backoff retries.
  * If all retries fail, it falls back to a highly realistic, localized, and scenario-aligned mock.
  */
 export async function runWithResilience<T>(
   taskName: string,
-  executeFn: () => Promise<T>,
+  executeFn: (modelName: string) => Promise<T>,
   fallbackFn: () => T,
+  models: string[] = ["gemini-3.5-flash", "gemini-flash-latest"],
   retries = 2,
   initialDelayMs = 1000
 ): Promise<T> {
   let attempt = 0;
   while (attempt <= retries) {
+    const modelIndex = Math.min(attempt, models.length - 1);
+    const modelToUse = models[modelIndex];
     try {
-      return await executeFn();
+      return await executeFn(modelToUse);
     } catch (err: unknown) {
       attempt++;
-      const errMsg = err instanceof Error ? err.message : String(err);
+      const errMsg = cleanErrorMessage(err);
       console.warn(
-        `[BALLIT RESILIENCE] ${taskName} warning (attempt ${attempt}/${retries + 1}): ${errMsg}`
+        `[BALLIT RESILIENCE] ${taskName} warning (attempt ${attempt}/${retries + 1} using ${modelToUse}): ${errMsg}`
       );
       if (attempt <= retries) {
         const delay = initialDelayMs * Math.pow(2, attempt - 1);
